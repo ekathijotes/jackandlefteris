@@ -437,19 +437,6 @@
         </fieldset>
       </div>
 
-      <div class="field" id="guests-field">
-        <fieldset>
-          <legend>Bringing someone?</legend>
-          <div class="choices">
-            <label class="choice"><input type="checkbox" id="plusone" name="plus_one" value="Yes"><span>Add a plus one</span></label>
-          </div>
-        </fieldset>
-      </div>
-
-      <div class="field" id="plusone-field" hidden>
-        <label for="plusone-name">Their name</label>
-        <input type="text" id="plusone-name" name="plus_one_name" autocomplete="off">
-      </div>
 
       <div class="field" id="diet-field">
         <label for="diet">Anything we should know &mdash; food, access, anything else</label>
@@ -541,7 +528,6 @@
     var form = document.getElementById('rsvp-form');
     var status = document.getElementById('status');
     var submit = document.getElementById('submit');
-    var guestsField = document.getElementById('guests-field');
     var dietField = document.getElementById('diet-field');
 
     function say(text, tone) {
@@ -549,21 +535,14 @@
       if (tone) { status.setAttribute('data-tone', tone); } else { status.removeAttribute('data-tone'); }
     }
 
-    var plusOne = document.getElementById('plusone');
-    var plusOneField = document.getElementById('plusone-field');
-    var plusOneName = document.getElementById('plusone-name');
-
     function sync() {
       var picked = form.querySelector('input[name="attending"]:checked');
       var coming = !!picked && picked.value === 'Yes';
-      guestsField.hidden = !coming;
       dietField.hidden = !coming;
-      plusOneField.hidden = !(coming && plusOne.checked);
-      if (plusOneField.hidden) { plusOneName.value = ''; }
     }
 
     form.addEventListener('change', function (e) {
-      if (e.target.name === 'attending' || e.target === plusOne) { sync(); }
+      if (e.target.name === 'attending') { sync(); }
     });
 
     form.addEventListener('submit', async function (e) {
@@ -584,11 +563,6 @@
       }
       if (!data.get('attending')) {
         say('Let us know whether you can come.', 'error');
-        return;
-      }
-      if (data.get('attending') === 'Yes' && plusOne.checked && !String(data.get('plus_one_name') || '').trim()) {
-        say('We need your plus one\u2019s name for the seating.', 'error');
-        plusOneName.focus();
         return;
       }
       if (data.get('_gotcha')) { return; }
