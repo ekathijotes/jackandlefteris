@@ -243,6 +243,11 @@
 
   /* Leaflet overrides so the map sits in the page's own palette */
   .leaflet-container { font-family: var(--body); background: #E4E3DE; }
+  /* OpenStreetMap's own tiles, pulled back to the page's palette so the map
+     reads as paper rather than as a stock web map. */
+  .leaflet-tile-pane {
+    filter: grayscale(1) sepia(0.18) brightness(1.06) contrast(0.86) opacity(0.92);
+  }
   .leaflet-popup-content-wrapper {
     border-radius: 0;
     background: var(--paper);
@@ -654,9 +659,9 @@
       map = L.map('map', { scrollWheelZoom: false, zoomControl: true })
              .setView([51.5205, -0.1585], 15);
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
 
       L.marker([VENUE.lat, VENUE.lng], {
