@@ -1,0 +1,694 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Places to stay near Old Marylebone Town Hall.">
+<title>Where to stay — Jack &amp; Lefteris</title>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Jost:wght@300;400;500&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+  :root { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+  body { margin: 0; }
+  img { max-width: 100%; }
+  [hidden] { display: none !important; }
+</style>
+<style>
+  /* Same bone-paper system as the invitation: hairline rules, Bodoni display,
+     Jost for working text. Here the page splits into a scrolling list of
+     places and a map that stays put beside it. */
+  :root {
+    --paper: #EDECE8;
+    --ink: #1A1A17;
+    --stone: #5F5E57;
+    --line: #DAD8D1;
+    --accent: #5B6150;
+    color-scheme: light;
+
+    --display: "Bodoni Moda", "Didot", "Playfair Display", Georgia, serif;
+    --body: "Jost", "Futura", "Avenir Next", system-ui, sans-serif;
+
+    --gutter: max(20px, env(safe-area-inset-left, 0px));
+    --gutter-r: max(20px, env(safe-area-inset-right, 0px));
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    font-weight: 300;
+    font-size: clamp(16px, 0.55vw + 13.5px, 20px);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; }
+
+  .band { border-bottom: 1px solid var(--line); }
+  .inner {
+    padding-left: var(--gutter);
+    padding-right: var(--gutter-r);
+    padding-block: clamp(40px, 7vw, 86px);
+    max-width: 1240px;
+    margin-inline: auto;
+  }
+
+  .eyebrow {
+    font-size: clamp(0.72rem, 0.22vw + 0.64rem, 0.86rem);
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--stone);
+    font-weight: 400;
+    margin: 0;
+  }
+
+  /* ---- masthead ---- */
+  .masthead .inner {
+    padding-block: clamp(22px, 3.4vw, 34px);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .wordmark {
+    font-family: var(--display);
+    font-size: clamp(1rem, 1.3vw + 0.7rem, 1.5rem);
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    margin: 0;
+    font-weight: 400;
+  }
+  .masthead a { text-decoration: none; }
+  .back {
+    font-size: clamp(0.72rem, 0.22vw + 0.64rem, 0.86rem);
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--stone);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color .18s ease, color .18s ease;
+  }
+  .back:hover { color: var(--ink); border-bottom-color: var(--line); }
+
+  /* ---- heading ---- */
+  h1 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(2rem, 3.4vw + 1rem, 4rem);
+    line-height: 1.04;
+    letter-spacing: -0.012em;
+    margin: clamp(14px, 2vw, 20px) 0 clamp(16px, 2.2vw, 24px);
+    text-wrap: balance;
+  }
+  .lede { max-width: 62ch; margin: 0; }
+  .rule { height: 1px; background: var(--line); border: 0; margin: 0; }
+
+  /* ---- filters ---- */
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(18px, 3vw, 44px);
+    padding-block: clamp(18px, 2.4vw, 26px);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-top: clamp(26px, 4vw, 44px);
+  }
+  .filter-group { min-width: 0; }
+  .filter-group > p {
+    font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem);
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin: 0 0 10px;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { position: relative; }
+  .chip input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .chip span {
+    display: block;
+    border: 1px solid var(--line);
+    padding: 9px 16px;
+    font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: border-color .18s ease, background .18s ease;
+  }
+  .chip input:checked + span {
+    border-color: var(--ink);
+    background: color-mix(in srgb, var(--ink) 7%, transparent);
+  }
+  .chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .count {
+    font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stone);
+    padding-block: 16px;
+    margin: 0;
+  }
+
+  /* ---- split: list + map ---- */
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
+    gap: clamp(26px, 4vw, 56px);
+    align-items: start;
+  }
+  .list { min-width: 0; display: flex; flex-direction: column; }
+
+  .place {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 4px clamp(16px, 2.4vw, 32px);
+    padding-block: clamp(18px, 2.4vw, 26px);
+    border-top: 1px solid var(--line);
+    text-align: left;
+    background: none;
+    border-left: 0; border-right: 0; border-bottom: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    width: 100%;
+    transition: background .18s ease;
+  }
+  .place:last-of-type { border-bottom: 1px solid var(--line); }
+  .place:hover, .place.is-active { background: color-mix(in srgb, var(--ink) 4%, transparent); }
+  .place:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+  .place h2 {
+    font-family: var(--display);
+    font-weight: 400;
+    font-size: clamp(1.15rem, 0.8vw + 0.95rem, 1.5rem);
+    margin: 0;
+    line-height: 1.2;
+    grid-column: 1;
+  }
+  .place .band-mark {
+    font-family: var(--display);
+    font-size: clamp(1rem, 0.6vw + 0.85rem, 1.25rem);
+    color: var(--stone);
+    grid-column: 2;
+    grid-row: 1;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .place .meta {
+    grid-column: 1 / -1;
+    font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin: 2px 0 0;
+  }
+  .place p.note { grid-column: 1 / -1; margin: 8px 0 0; max-width: 54ch; }
+  .place .go {
+    grid-column: 1 / -1;
+    margin: 10px 0 0;
+    font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .place .go span { border-bottom: 1px solid var(--line); padding-bottom: 2px; }
+
+  .empty { padding-block: 40px; color: var(--stone); font-style: italic; font-family: var(--display); }
+
+  /* ---- map ---- */
+  .map-wrap { position: sticky; top: clamp(16px, 3vw, 28px); }
+  #map {
+    height: clamp(380px, 68vh, 680px);
+    border: 1px solid var(--line);
+    background: #E4E3DE;
+    z-index: 0;
+  }
+  .map-note {
+    font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin: 12px 0 0;
+  }
+
+  /* Leaflet overrides so the map sits in the page's own palette */
+  .leaflet-container { font-family: var(--body); background: #E4E3DE; }
+  .leaflet-popup-content-wrapper {
+    border-radius: 0;
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 2px 18px rgba(0,0,0,.14);
+  }
+  .leaflet-popup-tip { background: var(--paper); }
+  .leaflet-popup-content { margin: 14px 16px; font-size: 0.9rem; line-height: 1.45; }
+  .leaflet-popup-content strong {
+    font-family: var(--display); font-weight: 400; font-size: 1.15rem;
+    display: block; margin-bottom: 4px;
+  }
+  .leaflet-popup-content em {
+    font-style: normal; letter-spacing: 0.18em; text-transform: uppercase;
+    font-size: 0.72rem; color: var(--stone); display: block; margin-top: 6px;
+  }
+  .leaflet-popup-content a { color: var(--ink); }
+  .leaflet-control-attribution {
+    background: rgba(237,236,232,.86) !important;
+    font-size: 10px !important;
+    color: var(--stone) !important;
+  }
+  .leaflet-control-attribution a { color: var(--stone) !important; }
+  .leaflet-bar a {
+    background: var(--paper); color: var(--ink);
+    border-bottom-color: var(--line); border-radius: 0 !important;
+  }
+  .leaflet-bar a:hover { background: #E4E3DE; }
+
+  .pin {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--paper); border: 1.5px solid var(--ink);
+    display: grid; place-items: center;
+    font-family: var(--display); font-size: 11px; color: var(--ink);
+    box-shadow: 0 1px 6px rgba(0,0,0,.18);
+    transition: transform .16s ease, background .16s ease, color .16s ease;
+  }
+  .pin.is-active, .pin:hover { background: var(--ink); color: var(--paper); transform: scale(1.22); }
+  .pin.venue { background: var(--accent); border-color: var(--accent); color: #fff; width: 26px; height: 26px; }
+
+  footer .inner {
+    padding-block: clamp(28px, 4vw, 44px);
+    display: flex; flex-wrap: wrap; gap: 8px 26px; justify-content: space-between;
+  }
+  footer p {
+    margin: 0;
+    font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem);
+    letter-spacing: 0.24em; text-transform: uppercase; color: var(--stone);
+  }
+  footer a { text-decoration: none; }
+
+  /* ---- gate ---- */
+  #gate {
+    position: fixed; inset: 0; z-index: 2000; background: var(--paper);
+    display: grid; place-items: center;
+    padding: max(24px, env(safe-area-inset-top, 0px)) var(--gutter-r) max(24px, env(safe-area-inset-bottom, 0px)) var(--gutter);
+  }
+  .gate-card { width: min(380px, 100%); display: flex; flex-direction: column; gap: 20px; }
+  .gate-card h2 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(1.6rem, 2.4vw + 0.8rem, 3.1rem); margin: 0;
+  }
+  .field { display: flex; flex-direction: column; gap: 7px; }
+  label {
+    font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem);
+    letter-spacing: 0.26em; text-transform: uppercase; color: var(--stone);
+  }
+  input[type="text"] {
+    font-family: var(--body); font-size: 1rem; font-weight: 300; color: var(--ink);
+    background: transparent; border: 0; border-bottom: 1px solid var(--line);
+    padding: 7px 0; width: 100%; border-radius: 0;
+  }
+  input:focus { outline: 0; border-bottom-color: var(--ink); }
+  input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .submit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; }
+  button.primary {
+    font-family: var(--body);
+    font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem);
+    letter-spacing: 0.26em; text-transform: uppercase;
+    background: var(--ink); color: var(--paper); border: 1px solid var(--ink);
+    padding: 12px 26px; cursor: pointer;
+  }
+  button.primary:hover { background: color-mix(in srgb, var(--ink) 84%, var(--paper)); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .status { font-size: 0.86rem; color: var(--stone); margin: 0; min-height: 1.3em; }
+  .status[data-tone="error"] { color: var(--accent); }
+  html.locked, html.locked body { overflow: hidden; }
+
+  @media (max-width: 900px) {
+    .split { grid-template-columns: minmax(0, 1fr); }
+    .map-wrap { position: static; order: -1; }
+    #map { height: clamp(300px, 46vh, 420px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div id="gate" hidden>
+  <div class="gate-card">
+    <p class="eyebrow">Jack &amp; Lefteris</p>
+    <hr class="rule">
+    <h2>A word, please</h2>
+    <p class="status">It&rsquo;s on your save-the-date.</p>
+    <form id="gate-form">
+      <div class="field">
+        <label for="pass">Passphrase</label>
+        <input type="text" id="pass" name="pass" autocomplete="off" autocapitalize="none" spellcheck="false" required>
+      </div>
+      <div class="submit-row" style="padding-top:18px">
+        <button type="submit" class="primary">Enter</button>
+        <p class="status" id="gate-error" role="status"></p>
+      </div>
+    </form>
+  </div>
+</div>
+
+<header class="band masthead">
+  <div class="inner">
+    <a class="wordmark" href="/">Jack &amp; Lefteris</a>
+    <a class="back" href="/">&larr; The invitation</a>
+  </div>
+</header>
+
+<section class="band">
+  <div class="inner">
+    <p class="eyebrow">Accommodation</p>
+    <h1>Where to stay</h1>
+    <p class="lede">A few places we like within walking distance of the town hall, at a range of prices. Nothing is held or blocked &mdash; book whichever suits you. Prices are a rough guide only; April 2027 rates are not released yet.</p>
+
+    <div class="filters">
+      <div class="filter-group">
+        <p>Budget</p>
+        <div class="chips" id="budget-chips">
+          <label class="chip"><input type="radio" name="budget" value="all" checked><span>All</span></label>
+          <label class="chip"><input type="radio" name="budget" value="1"><span>&pound; Simple</span></label>
+          <label class="chip"><input type="radio" name="budget" value="2"><span>&pound;&pound; Middle</span></label>
+          <label class="chip"><input type="radio" name="budget" value="3"><span>&pound;&pound;&pound; Special</span></label>
+        </div>
+      </div>
+      <div class="filter-group">
+        <p>On foot</p>
+        <div class="chips" id="walk-chips">
+          <label class="chip"><input type="radio" name="walk" value="99" checked><span>Any</span></label>
+          <label class="chip"><input type="radio" name="walk" value="5"><span>Under 5 min</span></label>
+          <label class="chip"><input type="radio" name="walk" value="10"><span>Under 10 min</span></label>
+        </div>
+      </div>
+    </div>
+
+    <p class="count" id="count"></p>
+
+    <div class="split">
+      <div class="list" id="list"></div>
+      <div class="map-wrap">
+        <div id="map"></div>
+        <p class="map-note">Click a pin for details. The green marker is the town hall.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="band">
+  <div class="inner">
+    <p><a href="/">Jack &amp; Lefteris</a></p>
+    <p>jackandlefteris.com</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+  /* ---- passphrase gate (shares its key with the invitation page) ---- */
+  (function () {
+    var PASS_ENC = 'd2VzdG1pbnN0ZXI=';
+    var KEY = 'jl-unlocked';
+    var gate = document.getElementById('gate');
+    var root = document.documentElement;
+
+    function expected() { try { return atob(PASS_ENC); } catch (e) { return ''; } }
+    function remembered() {
+      try { return window.sessionStorage.getItem(KEY) === '1'; } catch (e) { return false; }
+    }
+    function remember() {
+      try { window.sessionStorage.setItem(KEY, '1'); } catch (e) {}
+    }
+    function unlock() {
+      gate.hidden = true;
+      root.classList.remove('locked');
+      window.dispatchEvent(new Event('resize')); // the map was built while hidden
+    }
+    function lock() {
+      gate.hidden = false;
+      root.classList.add('locked');
+      var f = document.getElementById('pass');
+      if (f) { f.focus(); }
+    }
+
+    if (remembered()) { unlock(); } else { lock(); }
+
+    document.getElementById('gate-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var err = document.getElementById('gate-error');
+      var value = document.getElementById('pass').value.trim().toLowerCase();
+      if (!value) { return; }
+      if (value === expected()) {
+        remember();
+        unlock();
+      } else {
+        err.textContent = 'That is not it. Check the save-the-date.';
+        err.setAttribute('data-tone', 'error');
+      }
+    });
+  })();
+
+  /* ---- the places ------------------------------------------------------
+     band: 1 simple, 2 middle, 3 special. walk: minutes on foot from the
+     town hall. id: Google Maps place id, used for the details link.      */
+  var VENUE = { lat: 51.52211, lng: -0.15762 };
+
+  var PLACES = [
+    { name: 'The Landmark London', band: 3, walk: 5, lat: 51.52146, lng: -0.16260,
+      id: 'ChIJjV7c58kadkgRKxmfETsEywI',
+      note: 'The grand one, and the closest of the grand ones — a Victorian railway hotel with a glass-roofed atrium full of palm trees. Directly across from the town hall.',
+      price: 'around £350–500' },
+    { name: 'Dorset Square Hotel', band: 3, walk: 3,
+      id: 'ChIJ6zv7AJMNdkgR7bUvQyo6AXk',
+      lat: 51.52257, lng: -0.16028,
+      note: 'A Firmdale townhouse on a garden square, decorated in their usual bold prints. Small, and the shortest walk of anywhere on this list.',
+      price: 'around £300–450' },
+    { name: 'The Zetter Marylebone', band: 3, walk: 11,
+      id: 'ChIJ06R2qjQFdkgRXEH7aWCFEuA',
+      lat: 51.51475, lng: -0.15883,
+      note: 'A Georgian townhouse done with a lot of character — velvet, antiques, a good bar. Quiet street near Marble Arch.',
+      price: 'around £280–400' },
+    { name: 'The Marylebone Hotel', band: 3, walk: 9,
+      id: 'ChIJgTyZrdMadkgRUH_pQcbYT7A',
+      lat: 51.51807, lng: -0.14998,
+      note: 'In the middle of Marylebone Village, so the best position for shops and restaurants. Pool and gym if that matters.',
+      price: 'around £300–450' },
+    { name: 'The Prince Akatoki', band: 3, walk: 9,
+      id: 'ChIJC9CFqlwbdkgRq4TEEiHHUrA',
+      lat: 51.51591, lng: -0.15989,
+      note: 'Japanese-influenced and deliberately calm, near Marble Arch. The quietest of the smart options.',
+      price: 'around £280–400' },
+
+    { name: 'Holmes Hotel London', band: 2, walk: 2,
+      id: 'ChIJf6XIkM4adkgRbbcgrCzpsXA',
+      lat: 51.52106, lng: -0.15608,
+      note: 'The nearest hotel to the town hall — two minutes on foot, on Chiltern Street. Comfortable rather than grand, with a decent bar.',
+      price: 'around £180–260' },
+    { name: 'voco London — Marylebone', band: 2, walk: 9,
+      id: 'ChIJ7_iyNr8bdkgRr6wTHPVLMeQ',
+      lat: 51.51872, lng: -0.16632,
+      note: 'Reliable and recently done up, on Old Marylebone Road. The safe middle choice.',
+      price: 'around £160–230' },
+    { name: 'The Grazing Goat', band: 2, walk: 10,
+      id: 'ChIJaXKhrswadkgRGsF7xZSryx0',
+      lat: 51.51528, lng: -0.15813,
+      note: 'Rooms above a very good pub off Portman Square. Only a handful of them, so book early if you like the sound of it.',
+      price: 'around £190–260' },
+    { name: 'The Welbeck Hotel', band: 2, walk: 11,
+      id: 'ChIJ4VlbBdMadkgRCQN05hBYuu4',
+      lat: 51.51684, lng: -0.14949,
+      note: 'A quiet, well-kept place on Welbeck Street, a few minutes from Marylebone High Street.',
+      price: 'around £170–240' },
+    { name: 'Nottingham Place Hotel', band: 2, walk: 4,
+      id: 'ChIJRyZUJc4adkgR0VgJpSxwCaU',
+      lat: 51.52214, lng: -0.15338,
+      note: 'A small townhouse hotel four minutes away, simpler than the others nearby and better value for it.',
+      price: 'around £130–180' },
+
+    { name: 'The Z Hotel Gloucester Place', band: 1, walk: 6,
+      id: 'ChIJbUfGiMwadkgRfbMRkhbB02g',
+      lat: 51.51816, lng: -0.15823,
+      note: 'Compact rooms, done well, at a sensible price. The best value of anything this close in.',
+      price: 'around £100–150' },
+    { name: 'Marylebone Inn', band: 1, walk: 3,
+      id: 'ChIJBYWNRckadkgRwRGQ4hoSzdo',
+      lat: 51.52080, lng: -0.15953,
+      note: 'Plain and perfectly decent, three minutes from the ceremony on Gloucester Place.',
+      price: 'around £110–160' },
+    { name: 'Blandford Hotel', band: 1, walk: 2,
+      id: 'ChIJ4Yo1is4adkgR9Wfxv0lXSKc',
+      lat: 51.52123, lng: -0.15580,
+      note: 'A small family-run hotel on Chiltern Street. Nothing fancy, but you could not be closer.',
+      price: 'around £110–160' },
+    { name: 'Travelodge London Marylebone', band: 1, walk: 6,
+      id: 'ChIJK_Uw2MkadkgRBPH0PX3-sc0',
+      lat: 51.52211, lng: -0.16415,
+      note: 'The cheapest bed within walking distance. Exactly what you expect, and six minutes away.',
+      price: 'around £70–120' }
+  ];
+
+  /* ---- list and map ---- */
+  (function () {
+    var listEl = document.getElementById('count') && document.getElementById('list');
+    var countEl = document.getElementById('count');
+    var markers = {};
+    var map = null;
+    var activeName = null;
+
+    function bandMark(b) { return b === 3 ? '£££' : b === 2 ? '££' : '£'; }
+
+    function mapsUrl(p) {
+      return 'https://www.google.com/maps/search/?api=1&query=' +
+        encodeURIComponent(p.name + ', London') +
+        (p.id ? '&query_place_id=' + encodeURIComponent(p.id) : '');
+    }
+
+    function filtered() {
+      var b = document.querySelector('input[name="budget"]:checked').value;
+      var w = parseInt(document.querySelector('input[name="walk"]:checked').value, 10);
+      return PLACES.filter(function (p) {
+        return (b === 'all' || String(p.band) === b) && p.walk <= w;
+      });
+    }
+
+    function setActive(name, pan) {
+      activeName = name;
+      Array.prototype.forEach.call(document.querySelectorAll('.place'), function (el) {
+        el.classList.toggle('is-active', el.dataset.name === name);
+      });
+      Object.keys(markers).forEach(function (k) {
+        var icon = markers[k]._icon;
+        if (icon) {
+          var dot = icon.querySelector('.pin');
+          if (dot) { dot.classList.toggle('is-active', k === name); }
+        }
+      });
+      var m = markers[name];
+      if (m && map) {
+        m.openPopup();
+        if (pan) { map.panTo(m.getLatLng(), { animate: true }); }
+      }
+    }
+
+    function render() {
+      var rows = filtered();
+      listEl.innerHTML = '';
+
+      countEl.textContent = rows.length === 0
+        ? 'Nothing matches those two filters'
+        : rows.length + (rows.length === 1 ? ' place' : ' places');
+
+      if (rows.length === 0) {
+        var p = document.createElement('p');
+        p.className = 'empty';
+        p.textContent = 'Try widening the budget or the walk.';
+        listEl.appendChild(p);
+      }
+
+      rows.forEach(function (place) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'place';
+        btn.dataset.name = place.name;
+
+        var h = document.createElement('h2');
+        h.textContent = place.name;
+
+        var mark = document.createElement('div');
+        mark.className = 'band-mark';
+        mark.textContent = bandMark(place.band);
+
+        var meta = document.createElement('p');
+        meta.className = 'meta';
+        meta.textContent = place.walk + ' min walk · ' + place.price + ' a night';
+
+        var note = document.createElement('p');
+        note.className = 'note';
+        note.textContent = place.note;
+
+        var go = document.createElement('p');
+        go.className = 'go';
+        var a = document.createElement('a');
+        a.href = mapsUrl(place);
+        a.target = '_blank';
+        a.rel = 'noopener';
+        a.innerHTML = '<span>Photos, reviews &amp; booking &rarr;</span>';
+        a.addEventListener('click', function (e) { e.stopPropagation(); });
+        go.appendChild(a);
+
+        btn.appendChild(h);
+        btn.appendChild(mark);
+        btn.appendChild(meta);
+        btn.appendChild(note);
+        btn.appendChild(go);
+        btn.addEventListener('click', function () { setActive(place.name, true); });
+        listEl.appendChild(btn);
+      });
+
+      // show only the pins that survived the filter
+      var names = rows.map(function (r) { return r.name; });
+      Object.keys(markers).forEach(function (k) {
+        var m = markers[k];
+        if (!map) { return; }
+        if (names.indexOf(k) === -1) { map.removeLayer(m); }
+        else if (!map.hasLayer(m)) { m.addTo(map); }
+      });
+
+      if (activeName && names.indexOf(activeName) === -1) { activeName = null; }
+    }
+
+    function buildMap() {
+      if (typeof L === 'undefined') { return; } // library blocked or offline
+
+      map = L.map('map', { scrollWheelZoom: false, zoomControl: true })
+             .setView([51.5205, -0.1585], 15);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+      }).addTo(map);
+
+      L.marker([VENUE.lat, VENUE.lng], {
+        icon: L.divIcon({ className: '', html: '<div class="pin venue"></div>', iconSize: [26, 26], iconAnchor: [13, 13] }),
+        zIndexOffset: 500
+      }).addTo(map).bindPopup('<strong>Old Marylebone Town Hall</strong>97&ndash;113 Marylebone Road<em>The ceremony &middot; 6 pm</em>');
+
+      PLACES.forEach(function (p) {
+        var m = L.marker([p.lat, p.lng], {
+          icon: L.divIcon({
+            className: '',
+            html: '<div class="pin">' + bandMark(p.band).length + '</div>',
+            iconSize: [22, 22], iconAnchor: [11, 11]
+          })
+        });
+        m.bindPopup(
+          '<strong>' + p.name + '</strong>' +
+          p.walk + ' min walk &middot; ' + p.price + ' a night' +
+          '<em><a href="' + mapsUrl(p) + '" target="_blank" rel="noopener">Photos &amp; booking &rarr;</a></em>'
+        );
+        m.on('click', function () { setActive(p.name, false); });
+        markers[p.name] = m;
+        m.addTo(map);
+      });
+    }
+
+    buildMap();
+    render();
+
+    document.getElementById('budget-chips').addEventListener('change', render);
+    document.getElementById('walk-chips').addEventListener('change', render);
+  })();
+</script>
+</body>
+</html>

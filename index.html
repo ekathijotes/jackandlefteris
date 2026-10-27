@@ -231,6 +231,14 @@
   .row dd b { font-weight: 400; font-family: var(--display); font-size: 1.1em; display: block; }
   .row dd small { display: block; color: var(--stone); font-size: 0.9rem; margin-top: 2px; }
   .tbc { color: var(--accent); font-style: italic; font-family: var(--display); }
+  .row dd small a {
+    color: var(--ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 1px;
+    transition: border-color .18s ease;
+  }
+  .row dd small a:hover { border-bottom-color: var(--ink); }
 
   p { max-width: var(--measure); }
   .lede { max-width: var(--measure); margin: 0 0 clamp(18px, 2.4vw, 28px); }
@@ -409,7 +417,7 @@
       </div>
       <div class="row">
         <dt>Accommodation</dt>
-        <dd><b>Where to stay</b><small>For those joining us from further afield, we&rsquo;ll be sharing a selection of our favourite nearby hotels.</small></dd>
+        <dd><b>Where to stay</b><small>For those joining us from further afield, we have put together <a href="/stay/">a few places we like nearby</a>, at a range of prices.</small></dd>
       </div>
     </dl>
   </div>
