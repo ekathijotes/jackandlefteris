@@ -378,16 +378,16 @@
   <div class="inner">
     <p class="eyebrow">Accommodation</p>
     <h1>Where to stay</h1>
-    <p class="lede">A few favourites, all a short walk from the town hall. Book whichever takes your fancy.</p>
+    <p class="lede">A few favourites, all a short walk from the town hall and at every sort of price. Book whichever takes your fancy &mdash; the figures are a steer rather than a quote, as April 2027 rates are not yet out.</p>
 
     <div class="filters">
       <div class="filter-group">
         <p>Budget</p>
         <div class="chips" id="budget-chips">
           <label class="chip"><input type="radio" name="budget" value="all" checked><span>All</span></label>
-          <label class="chip"><input type="radio" name="budget" value="1"><span>&pound;</span></label>
-          <label class="chip"><input type="radio" name="budget" value="2"><span>&pound;&pound;</span></label>
-          <label class="chip"><input type="radio" name="budget" value="3"><span>&pound;&pound;&pound;</span></label>
+          <label class="chip"><input type="radio" name="budget" value="1"><span>&pound; Simple</span></label>
+          <label class="chip"><input type="radio" name="budget" value="2"><span>&pound;&pound; Middle</span></label>
+          <label class="chip"><input type="radio" name="budget" value="3"><span>&pound;&pound;&pound; Special</span></label>
         </div>
       </div>
       <div class="filter-group">
@@ -406,7 +406,7 @@
       <div class="list" id="list"></div>
       <div class="map-wrap">
         <div id="map"></div>
-        <p class="map-note">Green marker: the town hall. Click any pin for details.</p>
+        <p class="map-note">Green marker: the town hall. Numbers on the pins are the price band &mdash; 1 simple, 2 middle, 3 special. Click any pin for details.</p>
       </div>
     </div>
   </div>
@@ -622,7 +622,7 @@
 
         var meta = document.createElement('p');
         meta.className = 'meta';
-        meta.textContent = place.walk + ' min walk';
+        meta.textContent = place.walk + ' min walk · ' + place.price + ' a night';
 
         var note = document.createElement('p');
         note.className = 'note';
@@ -685,7 +685,7 @@
         });
         m.bindPopup(
           '<strong>' + p.name + '</strong>' +
-          p.walk + ' min walk' +
+          p.walk + ' min walk &middot; ' + p.price + ' a night' +
           '<em><a href="' + mapsUrl(p) + '" target="_blank" rel="noopener">Photos &amp; booking &rarr;</a></em>'
         );
         m.on('click', function () { setActive(p.name, false); });
