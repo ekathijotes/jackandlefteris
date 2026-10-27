@@ -406,7 +406,7 @@
       <div class="list" id="list"></div>
       <div class="map-wrap">
         <div id="map"></div>
-        <p class="map-note">Click a pin for details. The green marker is the town hall.</p>
+        <p class="map-note">Green marker: the town hall. Numbers on the pins are the price band &mdash; 1 simple, 2 middle, 3 special. Click any pin for details.</p>
       </div>
     </div>
   </div>
@@ -686,6 +686,11 @@
         markers[p.name] = m;
         m.addTo(map);
       });
+
+      // frame the venue and every hotel, with room for the popups
+      var pts = PLACES.map(function (p) { return [p.lat, p.lng]; });
+      pts.push([VENUE.lat, VENUE.lng]);
+      map.fitBounds(L.latLngBounds(pts), { padding: [28, 28] });
     }
 
     buildMap();
