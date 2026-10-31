@@ -26,8 +26,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Jost:wght@300;400;500&display=swap">
 <style>
   /* Layout: a hairline-ruled editorial grid — full-bleed rules divide the page into
-     bands; inside each band a two-column label/value list sits on a left-aligned
-     measure, with one oversized date as the single bold moment. */
+     bands. The rhythm varies deliberately: wide spec lists, then a sticky heading
+     rail beside its content, then one centred typographic interlude. */
   /* Warm bone paper, committed in either viewer theme: the photograph keeps its
      own night, the page stays warm, and the join between them is softened by
      the scrim ending on a deep warm grey rather than flat black. */
@@ -45,6 +45,9 @@
     --gutter: max(20px, env(safe-area-inset-left, 0px));
     --gutter-r: max(20px, env(safe-area-inset-right, 0px));
     --measure: 62ch;
+
+    /* the easing used for everything that moves: a quick departure, a long settle */
+    --settle: cubic-bezier(.16, 1, .3, 1);
   }
 
   * { box-sizing: border-box; }
@@ -57,6 +60,20 @@
     font-size: clamp(16px, 0.55vw + 13.5px, 20px);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* Paper grain. The palette is printed stock, so give it tooth — fixed, so it
+     sits on the page like texture rather than scrolling with the content. */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    pointer-events: none;
+    opacity: .05;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
   }
 
   .band { border-bottom: 1px solid var(--line); }
@@ -78,7 +95,17 @@
     margin: 0;
   }
 
-  /* ---- masthead ---- */
+  /* ---- masthead: stays with you, condenses once you have left the plate ---- */
+  .masthead {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    backdrop-filter: blur(12px) saturate(1.2);
+    border-bottom-color: transparent;
+    transition: border-color .5s ease, background .5s ease;
+  }
   .masthead .inner {
     padding-block: clamp(22px, 3.4vw, 34px);
     display: flex;
@@ -86,7 +113,10 @@
     gap: 10px 28px;
     align-items: baseline;
     justify-content: space-between;
+    transition: padding-block .55s var(--settle);
   }
+  html.scrolled .masthead { border-bottom-color: var(--line); }
+  html.scrolled .masthead .inner { padding-block: clamp(13px, 1.8vw, 18px); }
   .wordmark {
     font-family: var(--display);
     font-size: clamp(1rem, 1.3vw + 0.7rem, 1.5rem);
@@ -95,6 +125,26 @@
     margin: 0;
     font-weight: 400;
   }
+  .masthead nav {
+    display: flex;
+    gap: 22px;
+    align-items: baseline;
+  }
+  .navlink {
+    font-size: clamp(0.72rem, 0.22vw + 0.64rem, 0.86rem);
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    color: var(--stone);
+    text-decoration: none;
+    padding-bottom: 3px;
+    background-image: linear-gradient(var(--ink), var(--ink));
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size .5s var(--settle), color .3s ease;
+  }
+  .navlink:hover, .navlink:focus-visible { color: var(--ink); background-size: 100% 1px; }
+  .navlink:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 
   /* ---- photographic plate: type sits below the figures, on darkened road ---- */
   .plate {
@@ -102,11 +152,16 @@
     isolation: isolate;
     background: #282724;
     border-bottom: 0;
+    overflow: clip;
     --on-image: #FBFAF8;
     --on-image-dim: #ADA9A1;
   }
+  /* Three nested boxes so the two pieces of motion never fight over one
+     transform: .plate-media clips, .plate-pan takes the scroll drift, and the
+     image itself takes the push-in that settles on arrival. */
+  .plate-media { position: absolute; inset: -1px; z-index: -2; overflow: clip; }
+  .plate-pan { position: absolute; inset: -7% 0; }
   .plate img {
-    position: absolute; inset: 0; z-index: -2;
     display: block;
     width: 100%; height: 100%; max-width: 100%;
     object-fit: cover;
@@ -137,7 +192,6 @@
   .plate .eyebrow, .plate .datemark, .plate .hero-meta dt { text-shadow: 0 1px 14px rgba(0,0,0,.75); }
   .plate .eyebrow, .plate .datemark { text-shadow: 0 1px 12px rgba(0,0,0,.6); }
   .plate .rule { background: rgba(251,250,248,.26); }
-  .plate .longdate { color: var(--on-image); }
   .plate .hero-meta dt { color: var(--on-image-dim); }
   .plate .hero-meta dd { color: var(--on-image); }
   .plate .datemark .sep { color: rgba(251,250,248,.5); }
@@ -146,6 +200,7 @@
     font-family: var(--display);
     font-weight: 400;
     font-size: clamp(3.1rem, 11vw, 9.5rem);
+    font-variation-settings: 'opsz' 96;
     line-height: 0.84;
     letter-spacing: -0.015em;
     margin: 0;
@@ -155,16 +210,11 @@
     gap: 0 0.14em;
     font-variant-numeric: lining-nums tabular-nums;
   }
+  .datemark span { display: inline-block; }
   .datemark .sep {
     font-size: 0.34em;
     color: var(--stone);
     transform: translateY(-0.55em);
-  }
-  .longdate {
-    font-family: var(--display);
-    font-style: italic;
-    font-size: clamp(1.05rem, 1.5vw + 0.7rem, 1.75rem);
-    margin: 0;
   }
   .rule { height: 1px; background: var(--line); border: 0; margin: 0; }
 
@@ -176,35 +226,89 @@
   }
   .hero-meta dd { margin: 0; }
 
-  /* ---- photo frame ---- */
-  figure { margin: 0; min-width: 0; }
-  .frame {
-    aspect-ratio: 4 / 5;
-    max-width: 100%;
-    border: 1px solid var(--line);
-    background: linear-gradient(170deg, color-mix(in srgb, var(--ink) 5%, transparent), transparent 70%);
-    display: grid;
-    place-items: center;
-    text-align: center;
-    padding: 24px;
+  /* ---- the orchestrated reveal -------------------------------------------
+     One set-piece, earned by the guest typing the passphrase: the photograph
+     settles out of a slow push-in, the date assembles, the rule draws, and the
+     particulars arrive last. Nothing else on the page announces itself on
+     scroll — motion after this answers something the guest did.            */
+  .js .plate img { transform: scale(1.085); }
+  .js .plate-scrim { opacity: .55; }
+  .js .plate .eyebrow,
+  .js .plate .datemark span,
+  .js .plate .hero-meta > div { opacity: 0; }
+  .js .plate .rule { transform: scaleX(0); transform-origin: left; }
+
+  .js .plate.lit img { animation: settle 2.8s var(--settle) forwards; }
+  .js .plate.lit .plate-scrim { animation: fade 2.2s ease forwards; }
+  .js .plate.lit .eyebrow { animation: track 1.3s var(--settle) .35s forwards; }
+  .js .plate.lit .datemark span { animation: rise 1.15s var(--settle) forwards; }
+  .js .plate.lit .datemark span:nth-child(1) { animation-delay: .62s; }
+  .js .plate.lit .datemark span:nth-child(2) { animation-delay: .72s; }
+  .js .plate.lit .datemark span:nth-child(3) { animation-delay: .80s; }
+  .js .plate.lit .datemark span:nth-child(4) { animation-delay: .90s; }
+  .js .plate.lit .datemark span:nth-child(5) { animation-delay: .98s; }
+  .js .plate.lit .rule { animation: draw 1.4s var(--settle) 1.24s forwards; }
+  .js .plate.lit .hero-meta > div:nth-child(1) { animation: rise 1.1s var(--settle) 1.42s forwards; }
+  .js .plate.lit .hero-meta > div:nth-child(2) { animation: rise 1.1s var(--settle) 1.54s forwards; }
+
+  @keyframes settle { to { transform: scale(1); } }
+  @keyframes fade   { to { opacity: 1; } }
+  @keyframes draw   { to { transform: scaleX(1); } }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(26px); filter: blur(7px); }
+    to   { opacity: 1; transform: none; filter: blur(0); }
   }
-  .frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
-  .frame-note {
-    font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem); letter-spacing: 0.24em; text-transform: uppercase;
-    color: var(--stone); max-width: 24ch; line-height: 1.9;
-  }
-  figcaption {
-    font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem); letter-spacing: 0.22em; text-transform: uppercase;
-    color: var(--stone); margin-top: 12px;
+  @keyframes track {
+    from { opacity: 0; letter-spacing: .62em; }
+    to   { opacity: 1; letter-spacing: .32em; }
   }
 
-  /* ---- countdown ---- */
-  .count .inner { padding-block: clamp(18px, 2.6vw, 26px); display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
-  .count strong {
-    font-family: var(--display); font-weight: 500; font-size: 1.15rem;
-    font-variant-numeric: tabular-nums;
+  /* The photograph keeps drifting as the guest scrolls off it — the one piece of
+     continuous motion on the page, and it is their scroll that drives it. */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .js .plate-pan {
+        animation: drift linear;
+        animation-timeline: scroll(root block);
+        animation-range: 0 100vh;
+      }
+      @keyframes drift {
+        from { transform: translateY(-2%); }
+        to   { transform: translateY(6%); }
+      }
+    }
   }
-  .count span { font-size: clamp(0.72rem, 0.22vw + 0.64rem, 0.86rem); letter-spacing: 0.28em; text-transform: uppercase; color: var(--stone); }
+
+  /* ---- countdown: the one number worth enlarging ---- */
+  .count .inner {
+    padding-block: clamp(30px, 4.6vw, 58px);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px clamp(16px, 2.4vw, 30px);
+  }
+  .count-figure {
+    font-family: var(--display);
+    font-weight: 400;
+    font-variation-settings: 'opsz' 96;
+    font-size: clamp(3rem, 8vw, 6.2rem);
+    line-height: .88;
+    letter-spacing: -0.02em;
+    font-variant-numeric: lining-nums tabular-nums;
+    margin: 0;
+    min-height: .88em;
+  }
+  .count-label {
+    font-size: clamp(0.72rem, 0.22vw + 0.64rem, 0.86rem);
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--stone);
+    margin: 0;
+    white-space: nowrap;
+  }
+  /* the rule carries the eye off to the right so the band is composed rather
+     than a number marooned in white space */
+  .count-trail { flex: 1 1 120px; height: 1px; background: var(--line); border: 0; margin: 0; }
 
   /* ---- spec list ---- */
   h2 {
@@ -215,6 +319,7 @@
   }
   .spec { display: grid; gap: 0; margin: 0; }
   .row {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(130px, 0.26fr) minmax(0, 1fr);
     gap: 6px clamp(16px, 3vw, 44px);
@@ -223,10 +328,24 @@
     align-items: start;
   }
   .row:last-child { border-bottom: 1px solid var(--line); }
+  /* the rule above each row inks itself in under the pointer */
+  .row::before {
+    content: '';
+    position: absolute;
+    left: 0; top: -1px;
+    width: 100%; height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .7s var(--settle);
+  }
+  .row:hover::before, .row:focus-within::before { transform: scaleX(1); }
   .row dt {
     font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem); letter-spacing: 0.26em; text-transform: uppercase;
     color: var(--stone); padding-top: 0.32em;
+    transition: color .4s ease;
   }
+  .row:hover dt { color: var(--ink); }
   .row dd { margin: 0; min-width: 0; }
   .row dd b { font-weight: 400; font-family: var(--display); font-size: 1.1em; display: block; }
   .row dd small { display: block; color: var(--stone); font-size: 0.9rem; margin-top: 2px; }
@@ -234,21 +353,66 @@
   .row dd small a {
     color: var(--ink);
     text-decoration: none;
+    background-image: linear-gradient(var(--ink), var(--ink));
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
     border-bottom: 1px solid var(--line);
     padding-bottom: 1px;
-    transition: border-color .18s ease;
+    transition: background-size .5s var(--settle);
   }
-  .row dd small a:hover { border-bottom-color: var(--ink); }
+  .row dd small a:hover, .row dd small a:focus-visible { background-size: 100% 1px; }
 
   p { max-width: var(--measure); }
   .lede { max-width: var(--measure); margin: 0 0 clamp(18px, 2.4vw, 28px); }
 
-  /* ---- rsvp ---- */
-  .rsvp-line { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-top: 18px; }
-  .addr {
-    font-family: var(--display); font-size: clamp(1.1rem, 1.8vw + 0.6rem, 1.9rem);
-    user-select: all; word-break: break-word;
+  /* ---- a heading rail that holds its place beside the content ---- */
+  @media (min-width: 940px) {
+    .rail .inner {
+      display: grid;
+      grid-template-columns: minmax(0, 0.32fr) minmax(0, 1fr);
+      gap: clamp(32px, 5vw, 88px);
+      align-items: start;
+    }
+    .rail .rail-head {
+      position: sticky;
+      top: clamp(96px, 11vw, 132px);
+    }
+    .rail h2 { margin-bottom: clamp(14px, 1.6vw, 20px); }
+    .rail .lede { margin-bottom: 0; max-width: 34ch; }
+    .rail .rail-body { min-width: 0; }
   }
+
+  /* ---- interlude: the page changes its mind about alignment, once ---- */
+  .interlude .inner {
+    padding-block: clamp(56px, 9vw, 128px);
+    display: grid;
+    justify-items: center;
+    gap: clamp(20px, 3vw, 34px);
+  }
+  .interlude .rule { width: min(100%, 520px); }
+  .bigline {
+    font-family: var(--display);
+    font-weight: 400;
+    font-variation-settings: 'opsz' 72;
+    font-size: clamp(1.75rem, 4.4vw + 0.5rem, 3.9rem);
+    line-height: 1.12;
+    letter-spacing: -0.014em;
+    text-align: center;
+    margin: 0;
+    max-width: 22ch;
+    text-wrap: balance;
+  }
+  .bigline em {
+    display: block;
+    font-style: italic;
+    font-size: 0.62em;
+    color: var(--stone);
+    margin-top: 0.3em;
+    letter-spacing: 0;
+  }
+
+  /* ---- rsvp ---- */
   button {
     font-family: var(--body); font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem); letter-spacing: 0.26em;
     text-transform: uppercase; color: var(--ink); background: transparent;
@@ -267,14 +431,22 @@
   .field:first-of-type { border-top: 0; padding-top: 0; }
   label, legend {
     font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem); letter-spacing: 0.26em; text-transform: uppercase; color: var(--stone);
+    transition: color .35s ease;
   }
+  .field:focus-within > label { color: var(--ink); }
   input[type="text"], input[type="email"], textarea, select {
     font-family: var(--body); font-size: 1rem; font-weight: 300; color: var(--ink);
-    background: transparent; border: 0; border-bottom: 1px solid var(--line);
+    background-color: transparent; border: 0; border-bottom: 1px solid var(--line);
     padding: 7px 0; width: 100%; border-radius: 0;
+    /* the underline draws itself across as the guest starts writing */
+    background-image: linear-gradient(var(--ink), var(--ink));
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size .6s var(--settle);
   }
   textarea { resize: vertical; min-height: 68px; line-height: 1.55; }
-  input:focus, textarea:focus, select:focus { outline: 0; border-bottom-color: var(--ink); }
+  input:focus, textarea:focus, select:focus { outline: 0; background-size: 100% 1px; }
   input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
   fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 7px; }
@@ -282,11 +454,23 @@
   .choice { position: relative; }
   .choice input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
   .choice span {
-    display: block; border: 1px solid var(--line); padding: 9px 17px;
+    display: block; position: relative; overflow: hidden;
+    border: 1px solid var(--line); padding: 9px 17px;
     font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem); letter-spacing: 0.22em; text-transform: uppercase;
-    transition: border-color .18s ease, background .18s ease;
+    transition: border-color .3s ease;
   }
-  .choice input:checked + span { border-color: var(--ink); background: color-mix(in srgb, var(--ink) 7%, transparent); }
+  /* the chip fills from the left when chosen */
+  .choice span::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .55s var(--settle);
+  }
+  .choice input:hover + span { border-color: color-mix(in srgb, var(--ink) 40%, var(--line)); }
+  .choice input:checked + span { border-color: var(--ink); }
+  .choice input:checked + span::before { transform: scaleX(1); }
   .choice input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   .submit-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; padding-top: clamp(18px, 2.4vw, 26px); border-top: 1px solid var(--line); }
@@ -305,7 +489,9 @@
     position: fixed; inset: 0; z-index: 50; background: var(--paper);
     display: grid; place-items: center;
     padding: max(24px, env(safe-area-inset-top, 0px)) var(--gutter-r) max(24px, env(safe-area-inset-bottom, 0px)) var(--gutter);
+    transition: opacity .85s var(--settle), transform .85s var(--settle);
   }
+  #gate.out { opacity: 0; transform: translateY(-2.5vh); pointer-events: none; }
   .gate-card { width: min(380px, 100%); display: flex; flex-direction: column; gap: 20px; text-align: left; }
   .gate-card h2 { margin: 0; }
   .gate-card .rule { margin-block: 2px; }
@@ -315,9 +501,17 @@
   @media (max-width: 760px) {
     .row { grid-template-columns: minmax(0, 1fr); }
     .row dt { padding-top: 0; }
+    .masthead nav { gap: 16px; }
   }
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
+    /* nothing animates, so nothing may depend on an animation to become visible */
+    .js .plate img, .js .plate-pan { transform: none !important; }
+    .js .plate-scrim { opacity: 1 !important; }
+    .js .plate .eyebrow,
+    .js .plate .datemark span,
+    .js .plate .hero-meta > div { opacity: 1 !important; filter: none !important; }
+    .js .plate .rule { transform: none !important; }
   }
 </style>
 </head>
@@ -344,12 +538,19 @@
 <header class="band masthead">
   <div class="inner">
     <h1 class="wordmark">Jack &amp; Lefteris</h1>
-    <p class="eyebrow">London &middot; 2027</p>
+    <nav>
+      <a class="navlink" href="#rsvp">RSVP</a>
+      <a class="navlink" href="/stay/">Where to stay</a>
+    </nav>
   </div>
 </header>
 
-<section class="plate">
-  <img src="street.jpg" alt="Jack and Lefteris walking arm in arm down an empty Athens street at night" width="2200" height="1554">
+<section class="plate" id="plate">
+  <div class="plate-media">
+    <div class="plate-pan">
+      <img src="street.jpg" alt="Jack and Lefteris walking arm in arm down an empty Athens street at night" width="2200" height="1554">
+    </div>
+  </div>
   <div class="plate-scrim"></div>
   <div class="inner">
     <p class="eyebrow">You are invited</p>
@@ -368,10 +569,11 @@
   </div>
 </section>
 
-<section class="band count">
+<section class="band count" id="count">
   <div class="inner">
-    <strong id="days">—</strong>
-    <span id="days-label">days to go</span>
+    <p class="count-figure" id="days"></p>
+    <p class="count-label" id="days-label"></p>
+    <hr class="count-trail">
   </div>
 </section>
 
@@ -402,75 +604,88 @@
   </div>
 </section>
 
-<section class="band">
+<section class="band interlude">
   <div class="inner">
-    <h2>Getting there</h2>
-    <p class="lede">Our ceremony will take place at the iconic Old Marylebone Town Hall, on Marylebone Road, next to The Landmark London.</p>
-    <dl class="spec">
-      <div class="row">
-        <dt>Underground</dt>
-        <dd><b>Baker Street</b><small>A short walk from Baker Street station. Marylebone and Edgware Road stations are also nearby.</small></dd>
-      </div>
-      <div class="row">
-        <dt>By car</dt>
-        <dd><b>Parking &amp; taxis</b><small>There is no dedicated parking at the venue, and street parking is limited. We recommend arriving by taxi or public transport.</small></dd>
-      </div>
-      <div class="row">
-        <dt>Accommodation</dt>
-        <dd><b>Where to stay</b><small>For those joining us from further afield, we have put together <a href="/stay/">a few places we like nearby</a>, at a range of prices.</small></dd>
-      </div>
-    </dl>
+    <hr class="rule">
+    <p class="bigline">Friday, the second of April<em>six in the evening</em></p>
+    <hr class="rule">
   </div>
 </section>
 
-<section class="band" id="rsvp">
+<section class="band rail">
   <div class="inner">
-    <h2>RSVP</h2>
-    <p class="lede">Please let us know by the end of November 2026. If your plans change, please let us know.</p>
+    <div class="rail-head">
+      <h2>Getting there</h2>
+      <p class="lede">Our ceremony will take place at the iconic Old Marylebone Town Hall, on Marylebone Road, next to The Landmark London.</p>
+    </div>
+    <div class="rail-body">
+      <dl class="spec">
+        <div class="row">
+          <dt>Underground</dt>
+          <dd><b>Baker Street</b><small>A short walk from Baker Street station. Marylebone and Edgware Road stations are also nearby.</small></dd>
+        </div>
+        <div class="row">
+          <dt>By car</dt>
+          <dd><b>Parking &amp; taxis</b><small>There is no dedicated parking at the venue, and street parking is limited. We recommend arriving by taxi or public transport.</small></dd>
+        </div>
+        <div class="row">
+          <dt>Accommodation</dt>
+          <dd><b>Where to stay</b><small>For those joining us from further afield, we have put together <a href="/stay/">a few places we like nearby</a>, at a range of prices.</small></dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+</section>
 
-    <form id="rsvp-form" novalidate>
-      <div class="field">
-        <label for="name">Your name</label>
-        <input type="text" id="name" name="name" autocomplete="name" required>
-      </div>
+<section class="band rail" id="rsvp">
+  <div class="inner">
+    <div class="rail-head">
+      <h2>RSVP</h2>
+      <p class="lede">Please let us know by the end of November 2026. If your plans change, please let us know.</p>
+    </div>
+    <div class="rail-body">
+      <form id="rsvp-form" novalidate>
+        <div class="field">
+          <label for="name">Your name</label>
+          <input type="text" id="name" name="name" autocomplete="name" required>
+        </div>
 
-      <div class="field">
-        <label for="email-field">Email</label>
-        <input type="email" id="email-field" name="email" autocomplete="email" required>
-      </div>
+        <div class="field">
+          <label for="email-field">Email</label>
+          <input type="email" id="email-field" name="email" autocomplete="email" required>
+        </div>
 
-      <div class="field">
-        <fieldset>
-          <legend>Can you come?</legend>
-          <div class="choices">
-            <label class="choice"><input type="radio" name="attending" value="Yes" required><span>Joyfully accept</span></label>
-            <label class="choice"><input type="radio" name="attending" value="No"><span>Regretfully decline</span></label>
-          </div>
-        </fieldset>
-      </div>
+        <div class="field">
+          <fieldset>
+            <legend>Can you come?</legend>
+            <div class="choices">
+              <label class="choice"><input type="radio" name="attending" value="Yes" required><span>Joyfully accept</span></label>
+              <label class="choice"><input type="radio" name="attending" value="No"><span>Regretfully decline</span></label>
+            </div>
+          </fieldset>
+        </div>
 
+        <div class="field" id="diet-field">
+          <label for="diet">Anything we should know &mdash; food, access, anything else</label>
+          <textarea id="diet" name="dietary" rows="2"></textarea>
+        </div>
 
-      <div class="field" id="diet-field">
-        <label for="diet">Anything we should know &mdash; food, access, anything else</label>
-        <textarea id="diet" name="dietary" rows="2"></textarea>
-      </div>
+        <div class="field">
+          <label for="message">A note for us, if you like</label>
+          <textarea id="message" name="message" rows="2"></textarea>
+        </div>
 
-      <div class="field">
-        <label for="message">A note for us, if you like</label>
-        <textarea id="message" name="message" rows="2"></textarea>
-      </div>
+        <div class="hp" aria-hidden="true">
+          <label for="company">Leave this empty</label>
+          <input type="text" id="company" name="_gotcha" tabindex="-1" autocomplete="off">
+        </div>
 
-      <div class="hp" aria-hidden="true">
-        <label for="company">Leave this empty</label>
-        <input type="text" id="company" name="_gotcha" tabindex="-1" autocomplete="off">
-      </div>
-
-      <div class="submit-row">
-        <button type="submit" class="primary" id="submit">Send reply</button>
-        <p class="status" id="status" role="status"></p>
-      </div>
-    </form>
-
+        <div class="submit-row">
+          <button type="submit" class="primary" id="submit">Send reply</button>
+          <p class="status" id="status" role="status"></p>
+        </div>
+      </form>
+    </div>
   </div>
 </section>
 
@@ -482,6 +697,14 @@
 </footer>
 
 <script>
+  /* Tell the stylesheet that scripting is on, so the reveal may start from a
+     hidden state. Without this class every element is simply visible. */
+  document.documentElement.className += ' js';
+
+  var REDUCED = window.matchMedia
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false;
+
   /* ---- passphrase gate ----------------------------------------------------
      This keeps the page out of casual view. It is not security: the page's
      content is in the source for anyone who looks. To change the passphrase,
@@ -491,6 +714,7 @@
     var PASS_ENC = 'd2VzdG1pbnN0ZXI=';
     var KEY = 'jl-unlocked';
     var gate = document.getElementById('gate');
+    var plate = document.getElementById('plate');
     var root = document.documentElement;
 
     function expected() {
@@ -502,9 +726,14 @@
     function remember() {
       try { window.sessionStorage.setItem(KEY, '1'); } catch (e) { /* private window */ }
     }
-    function unlock() {
-      gate.hidden = true;
+    /* The reveal: the gate lifts away, and the plate lights as it goes. */
+    function light() { plate.classList.add('lit'); }
+    function unlock(withTransition) {
       root.classList.remove('locked');
+      if (!withTransition) { gate.hidden = true; light(); return; }
+      gate.classList.add('out');
+      light();
+      window.setTimeout(function () { gate.hidden = true; }, 900);
     }
     function lock() {
       gate.hidden = false;
@@ -513,7 +742,7 @@
       if (f) { f.focus(); }
     }
 
-    if (remembered()) { unlock(); } else { lock(); }
+    if (remembered()) { unlock(false); } else { lock(); }
 
     document.getElementById('gate-form').addEventListener('submit', function (e) {
       e.preventDefault();
@@ -522,12 +751,24 @@
       if (!value) { return; }
       if (value === expected()) {
         remember();
-        unlock();
+        unlock(true);
       } else {
         err.textContent = 'That is not it. Check the save-the-date.';
         err.setAttribute('data-tone', 'error');
       }
     });
+  })();
+
+  /* ---- masthead condenses once the plate is behind you ---- */
+  (function () {
+    var root = document.documentElement;
+    var on = false;
+    function check() {
+      var past = window.scrollY > 90;
+      if (past !== on) { on = past; root.classList.toggle('scrolled', past); }
+    }
+    check();
+    window.addEventListener('scroll', check, { passive: true });
   })();
 
   /* ---- RSVP ---------------------------------------------------------------
@@ -598,7 +839,7 @@
         form.innerHTML = '';
         var p = document.createElement('p');
         p.className = 'thanks';
-        p.textContent = 'Thank you for confirming. Do keep an eye on this page \u2014 we will add the rest of the details here as we settle them.';
+        p.textContent = 'Thank you for confirming. Do keep an eye on this page — we will add the rest of the details here as we settle them.';
         form.appendChild(p);
       } catch (err) {
         submit.disabled = false;
@@ -607,6 +848,9 @@
     });
   })();
 
+  /* ---- the countdown, which counts ---------------------------------------
+     The figure runs up to the real number the first time it comes into view:
+     one reveal, on the single number anyone actually wants from this page.  */
   (function () {
     var target = new Date(2027, 3, 2, 0, 0, 0);
     var now = new Date();
@@ -615,20 +859,40 @@
     var days = Math.round((target - startOfToday) / oneDay);
     var el = document.getElementById('days');
     var label = document.getElementById('days-label');
-    if (days > 1) {
-      el.textContent = String(days);
-      label.textContent = 'days to go';
-    } else if (days === 1) {
-      el.textContent = '1';
-      label.textContent = 'day to go';
-    } else if (days === 0) {
-      el.textContent = 'Today';
-      label.textContent = '';
-    } else {
+    var band = document.getElementById('count');
+
+    if (days < 0) {
       el.textContent = 'Married';
       label.textContent = 'since 2 April 2027';
+      return;
+    }
+    if (days === 0) { el.textContent = 'Today'; label.textContent = ''; return; }
+    label.textContent = days === 1 ? 'day to go' : 'days to go';
+
+    if (REDUCED || !window.IntersectionObserver || !window.requestAnimationFrame) {
+      el.textContent = String(days);
+      return;
     }
 
+    function run() {
+      var dur = 1500, t0 = null;
+      function step(t) {
+        if (t0 === null) { t0 = t; }
+        var p = Math.min(1, (t - t0) / dur);
+        var eased = 1 - Math.pow(1 - p, 4);
+        el.textContent = String(Math.round(days * eased));
+        if (p < 1) { window.requestAnimationFrame(step); }
+      }
+      window.requestAnimationFrame(step);
+    }
+
+    var seen = false;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && !seen) { seen = true; io.disconnect(); run(); }
+      });
+    }, { threshold: 0.3 });
+    io.observe(band);
   })();
 </script>
 </body>

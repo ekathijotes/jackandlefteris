@@ -37,6 +37,8 @@
 
     --gutter: max(20px, env(safe-area-inset-left, 0px));
     --gutter-r: max(20px, env(safe-area-inset-right, 0px));
+
+    --settle: cubic-bezier(.16, 1, .3, 1);
   }
 
   * { box-sizing: border-box; }
@@ -49,6 +51,19 @@
     font-size: clamp(16px, 0.55vw + 13.5px, 20px);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+  }
+
+  /* the same printed-stock tooth as the invitation */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    pointer-events: none;
+    opacity: .05;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
   }
 
   a { color: inherit; }
@@ -71,7 +86,16 @@
     margin: 0;
   }
 
-  /* ---- masthead ---- */
+  /* ---- masthead: stays with you, condenses once you start reading ---- */
+  .masthead {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    backdrop-filter: blur(12px) saturate(1.2);
+    transition: border-color .5s ease;
+  }
   .masthead .inner {
     padding-block: clamp(22px, 3.4vw, 34px);
     display: flex;
@@ -79,7 +103,9 @@
     gap: 10px 28px;
     align-items: baseline;
     justify-content: space-between;
+    transition: padding-block .55s var(--settle);
   }
+  html.scrolled .masthead .inner { padding-block: clamp(13px, 1.8vw, 18px); }
   .wordmark {
     font-family: var(--display);
     font-size: clamp(1rem, 1.3vw + 0.7rem, 1.5rem);
@@ -136,18 +162,27 @@
   .chip input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
   .chip span {
     display: block;
+    position: relative;
+    overflow: hidden;
     border: 1px solid var(--line);
     padding: 9px 16px;
     font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem);
     letter-spacing: 0.2em;
     text-transform: uppercase;
     white-space: nowrap;
-    transition: border-color .18s ease, background .18s ease;
+    transition: border-color .3s ease;
   }
-  .chip input:checked + span {
-    border-color: var(--ink);
-    background: color-mix(in srgb, var(--ink) 7%, transparent);
+  .chip span::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: color-mix(in srgb, var(--ink) 8%, transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .55s var(--settle);
   }
+  .chip input:hover + span { border-color: color-mix(in srgb, var(--ink) 40%, var(--line)); }
+  .chip input:checked + span { border-color: var(--ink); }
+  .chip input:checked + span::before { transform: scaleX(1); }
   .chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   .count {
@@ -169,6 +204,7 @@
   .list { min-width: 0; display: flex; flex-direction: column; }
 
   .place {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 4px clamp(16px, 2.4vw, 32px);
@@ -186,6 +222,19 @@
   .place:last-of-type { border-bottom: 1px solid var(--line); }
   .place:hover, .place.is-active { background: color-mix(in srgb, var(--ink) 4%, transparent); }
   .place:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+  /* the rule above the entry inks in under the pointer, and stays inked for
+     whichever place is currently shown on the map */
+  .place::before {
+    content: '';
+    position: absolute;
+    left: 0; top: -1px;
+    width: 100%; height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .7s var(--settle);
+  }
+  .place:hover::before, .place.is-active::before, .place:focus-visible::before { transform: scaleX(1); }
 
   .place h2 {
     font-family: var(--display);
@@ -226,7 +275,8 @@
   .empty { padding-block: 40px; color: var(--stone); font-style: italic; font-family: var(--display); }
 
   /* ---- map ---- */
-  .map-wrap { position: sticky; top: clamp(16px, 3vw, 28px); }
+  /* clears the sticky masthead */
+  .map-wrap { position: sticky; top: clamp(88px, 10vw, 118px); }
   #map {
     height: clamp(380px, 68vh, 680px);
     border: 1px solid var(--line);
@@ -304,6 +354,19 @@
     position: fixed; inset: 0; z-index: 2000; background: var(--paper);
     display: grid; place-items: center;
     padding: max(24px, env(safe-area-inset-top, 0px)) var(--gutter-r) max(24px, env(safe-area-inset-bottom, 0px)) var(--gutter);
+    transition: opacity .85s var(--settle), transform .85s var(--settle);
+  }
+  #gate.out { opacity: 0; transform: translateY(-2.5vh); pointer-events: none; }
+
+  /* the heading arrives once the gate is out of the way — the same gesture as
+     the invitation, kept shorter because this is a page to use, not to look at */
+  .js .head-eyebrow, .js h1, .js .lede { opacity: 0; }
+  .js .lit .head-eyebrow { animation: rise .95s var(--settle) .1s forwards; }
+  .js .lit h1 { animation: rise .95s var(--settle) .2s forwards; }
+  .js .lit .lede { animation: rise .95s var(--settle) .32s forwards; }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(20px); filter: blur(6px); }
+    to   { opacity: 1; transform: none; filter: blur(0); }
   }
   .gate-card { width: min(380px, 100%); display: flex; flex-direction: column; gap: 20px; }
   .gate-card h2 {
@@ -343,6 +406,8 @@
   }
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
+    /* nothing animates, so nothing may depend on an animation to become visible */
+    .js .head-eyebrow, .js h1, .js .lede { opacity: 1 !important; filter: none !important; }
   }
 </style>
 </head>
@@ -374,9 +439,9 @@
   </div>
 </header>
 
-<section class="band">
+<section class="band" id="head">
   <div class="inner">
-    <p class="eyebrow">Accommodation</p>
+    <p class="eyebrow head-eyebrow">Accommodation</p>
     <h1>Where to stay</h1>
     <p class="lede">A few favourites, all a short walk from the town hall and at every sort of price. Book whichever takes your fancy &mdash; the figures are a steer rather than a quote, as April 2027 rates are not yet out.</p>
 
@@ -421,11 +486,14 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
+  document.documentElement.className += ' js';
+
   /* ---- passphrase gate (shares its key with the invitation page) ---- */
   (function () {
     var PASS_ENC = 'd2VzdG1pbnN0ZXI=';
     var KEY = 'jl-unlocked';
     var gate = document.getElementById('gate');
+    var head = document.getElementById('head');
     var root = document.documentElement;
 
     function expected() { try { return atob(PASS_ENC); } catch (e) { return ''; } }
@@ -435,9 +503,14 @@
     function remember() {
       try { window.sessionStorage.setItem(KEY, '1'); } catch (e) {}
     }
-    function unlock() {
-      gate.hidden = true;
+    function unlock(withTransition) {
       root.classList.remove('locked');
+      head.classList.add('lit');
+      if (!withTransition) { gate.hidden = true; }
+      else {
+        gate.classList.add('out');
+        window.setTimeout(function () { gate.hidden = true; }, 900);
+      }
       window.dispatchEvent(new Event('resize')); // the map was built while hidden
     }
     function lock() {
@@ -447,7 +520,7 @@
       if (f) { f.focus(); }
     }
 
-    if (remembered()) { unlock(); } else { lock(); }
+    if (remembered()) { unlock(false); } else { lock(); }
 
     document.getElementById('gate-form').addEventListener('submit', function (e) {
       e.preventDefault();
@@ -456,12 +529,24 @@
       if (!value) { return; }
       if (value === expected()) {
         remember();
-        unlock();
+        unlock(true);
       } else {
         err.textContent = 'That is not it. Check the save-the-date.';
         err.setAttribute('data-tone', 'error');
       }
     });
+  })();
+
+  /* ---- masthead condenses once you start reading ---- */
+  (function () {
+    var root = document.documentElement;
+    var on = false;
+    function check() {
+      var past = window.scrollY > 90;
+      if (past !== on) { on = past; root.classList.toggle('scrolled', past); }
+    }
+    check();
+    window.addEventListener('scroll', check, { passive: true });
   })();
 
   /* ---- the places ------------------------------------------------------
