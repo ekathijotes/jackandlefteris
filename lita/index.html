@@ -450,7 +450,8 @@
     var HALL = { lat: 51.52211, lng: -0.15762 };
     var LITA = { lat: 51.52032, lng: -0.15232 };
 
-    var map = L.map('map', { scrollWheelZoom: false, zoomControl: true });
+    var map = L.map('map', { scrollWheelZoom: false, zoomControl: true })
+                .setView([51.52120, -0.15500], 16);
 
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -487,7 +488,18 @@
       lineJoin: 'round'
     }).addTo(map);
 
-    map.fitBounds(L.latLngBounds(WALK), { padding: [60, 60] });
+    /* The map is built behind the passphrase gate, where it cannot measure
+       itself properly, so framing it once at load leaves it at a nonsense
+       zoom. Re-measure and re-frame whenever the size changes — unlocking
+       the page fires a resize, which is what brings this back to its senses. */
+    var BOUNDS = L.latLngBounds(WALK);
+    function frame() {
+      map.invalidateSize(false);
+      map.fitBounds(BOUNDS, { padding: [50, 50] });
+    }
+    frame();
+    window.addEventListener('resize', frame);
+    window.setTimeout(frame, 400);
   })();
 </script>
 </body>
