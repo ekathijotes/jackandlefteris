@@ -76,7 +76,7 @@
     background-size: 160px 160px;
   }
 
-  .band { border-bottom: 1px solid var(--line); }
+  .band { border-bottom: 2px solid var(--line); }
   .band:last-of-type { border-bottom: 0; }
   .inner {
     padding-left: var(--gutter);
@@ -103,6 +103,7 @@
     background: color-mix(in srgb, var(--paper) 88%, transparent);
     -webkit-backdrop-filter: blur(12px) saturate(1.2);
     backdrop-filter: blur(12px) saturate(1.2);
+    border-bottom-width: 1px;
     border-bottom-color: transparent;
     transition: border-color .5s ease, background .5s ease;
   }
