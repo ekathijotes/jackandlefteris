@@ -204,7 +204,7 @@
     transition: opacity .85s var(--settle), transform .85s var(--settle);
   }
   #gate.out { opacity: 0; transform: translateY(-2.5vh); pointer-events: none; }
-  .js .head-eyebrow, .js h1, .js .lede, .js .hero-art { opacity: 0; }
+  .js #head .head-eyebrow, .js #head h1, .js #head .lede, .js #head .hero-art { opacity: 0; }
   .js .lit .head-eyebrow { animation: rise .95s var(--settle) .1s forwards; }
   .js .lit h1 { animation: rise .95s var(--settle) .2s forwards; }
   .js .lit .lede { animation: rise .95s var(--settle) .32s forwards; }
@@ -215,8 +215,8 @@
   }
   /* the drawing inks itself in once the page is open */
   .js .lit .sketch path, .js .lit .sketch ellipse { animation: ink 2.4s ease forwards; }
-  .sketch path, .sketch ellipse { stroke-dasharray: 1200; stroke-dashoffset: 0; }
-  .js .sketch path, .js .sketch ellipse { stroke-dashoffset: 1200; }
+  #head .sketch path, #head .sketch ellipse { stroke-dasharray: 1200; stroke-dashoffset: 0; }
+  .js #head .sketch path, .js #head .sketch ellipse { stroke-dashoffset: 1200; }
   @keyframes ink { to { stroke-dashoffset: 0; } }
 
   .gate-card { width: min(380px, 100%); display: flex; flex-direction: column; gap: 20px; }
@@ -250,7 +250,7 @@
   }
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
-    .js .head-eyebrow, .js h1, .js .lede, .js .hero-art { opacity: 1 !important; filter: none !important; }
+    .js #head .head-eyebrow, .js #head h1, .js #head .lede, .js #head .hero-art { opacity: 1 !important; filter: none !important; }
     .js .sketch path, .js .sketch ellipse { stroke-dashoffset: 0 !important; }
   }
 </style>
@@ -359,8 +359,47 @@
 
 <section class="band">
   <div class="inner">
-    <h2>The kitchen</h2>
-    <p class="lede" style="max-width:64ch">Everything comes off an open grill in the middle of the room. The cooking is Mediterranean in spirit and mostly British in its ingredients &mdash; Cornish fish, Hereford beef, Lake District lamb &mdash; and the plates are built to be shared. Kostas Papathanasiou, who came from Frantz&eacute;n in Stockholm, runs it.</p>
+    <div class="hero-grid">
+      <div>
+        <h2>The kitchen</h2>
+        <p class="lede">Everything comes off an open grill in the middle of the room. The cooking is Mediterranean in spirit and mostly British in its ingredients &mdash; Cornish fish, Hereford beef, Lake District lamb &mdash; and the plates are built to be shared. Kostas Papathanasiou, who came from Frantz&eacute;n in Stockholm, runs it.</p>
+        <p class="lede" style="margin-top:1em">The room is named for a grandmother &mdash; <em>abuelita</em> &mdash; and it behaves like one: generous, a little loud, and entirely uninterested in ceremony.</p>
+      </div>
+
+      <div>
+        <!-- Also ours: the hearth, drawn in the same ink. -->
+        <svg class="sketch" viewBox="0 0 520 330" role="img" aria-label="An ink drawing of an open hearth with a fish grilling over the fire">
+          <g fill="none" stroke="currentColor" stroke-width="1.45" stroke-linecap="round" stroke-linejoin="round">
+            <!-- the arch of the hearth -->
+            <path d="M70,286 L70,138 C70,80 158,52 260,52 C362,52 450,80 450,138 L450,286"/>
+            <path d="M92,286 L92,146 C92,96 170,74 260,74 C350,74 428,96 428,146 L428,286"/>
+            <!-- brickwork, lightly -->
+            <path d="M70,186 L92,186 M70,220 L92,220 M70,254 L92,254"/>
+            <path d="M428,186 L450,186 M428,220 L450,220 M428,254 L450,254"/>
+            <path d="M152,84 C170,78 196,74 222,72"/>
+            <!-- the grate -->
+            <path d="M112,214 L408,214"/>
+            <path d="M136,214 L136,228 M180,214 L180,228 M224,214 L224,228 M268,214 L268,228 M312,214 L312,228 M356,214 L356,228"/>
+            <!-- a whole fish, laid across it -->
+            <path d="M176,200 C204,176 290,176 318,198 C290,216 204,216 176,200"/>
+            <path d="M318,198 L348,181 M348,181 L348,215 M348,215 L318,198"/>
+            <path d="M232,182 C240,190 240,200 234,210"/>
+            <path d="M262,180 C270,189 270,201 264,211"/>
+            <ellipse cx="195" cy="196" rx="3.4" ry="3.4"/>
+            <!-- fire underneath -->
+            <path d="M150,268 C142,250 160,242 154,228 C172,238 180,256 168,268"/>
+            <path d="M212,272 C202,250 224,240 216,224 C238,236 248,258 234,272"/>
+            <path d="M286,270 C277,251 296,242 289,227 C309,238 318,257 305,270"/>
+            <path d="M352,268 C344,252 361,244 355,231 C372,241 380,256 369,268"/>
+            <!-- logs -->
+            <path d="M126,282 L240,276 M240,276 C246,280 246,284 240,288 L126,290 C120,286 120,284 126,282"/>
+            <path d="M286,280 L394,276 M394,276 C400,280 400,284 394,288 L286,290 C280,286 280,284 286,280"/>
+            <!-- hearth floor -->
+            <path d="M58,300 C180,297 340,297 462,300"/>
+          </g>
+        </svg>
+      </div>
+    </div>
 
     <div class="aside">
       <p class="k">Menu, wine and cocktails</p>
