@@ -170,25 +170,7 @@
   .pin { width: 100%; height: 100%; border-radius: 50%; background: var(--ink); border: 2px solid var(--paper); box-shadow: 0 1px 6px rgba(0,0,0,.3); }
   .pin.venue { background: var(--bottle); }
 
-  /* ---- menu + wine lists ---- */
-  .two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(30px, 5vw, 76px); }
-  .course { margin-bottom: clamp(26px, 3.4vw, 38px); break-inside: avoid; }
-  .course > p.h {
-    margin: 0 0 14px; padding-bottom: 9px; border-bottom: 1px solid var(--line);
-    font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.82rem);
-    letter-spacing: 0.3em; text-transform: uppercase; color: var(--bottle);
-  }
-  ul.dishes { list-style: none; margin: 0; padding: 0; }
-  ul.dishes li {
-    display: flex; gap: 14px; align-items: baseline;
-    padding: 8px 0; border-bottom: 1px dotted var(--line);
-    font-size: clamp(0.92rem, 0.3vw + 0.82rem, 1.04rem);
-  }
-  ul.dishes li:last-child { border-bottom: 0; }
-  ul.dishes .n { flex: 1 1 auto; min-width: 0; }
-  ul.dishes .n em { font-style: normal; display: block; color: var(--stone); font-size: 0.84em; letter-spacing: .04em; margin-top: 2px; }
-  ul.dishes .p { flex: none; color: var(--stone); font-variant-numeric: tabular-nums; font-size: 0.88em; }
-
+  /* ---- notes ---- */
   .aside {
     background: var(--bottle-soft); border: 1px solid var(--line);
     padding: clamp(20px, 2.6vw, 30px); margin-top: clamp(26px, 4vw, 40px);
@@ -264,7 +246,6 @@
     .hero-grid { grid-template-columns: minmax(0, 1fr); }
     .hero-art { order: -1; max-width: 420px; }
     .facts { grid-template-columns: minmax(0, 1fr); }
-    .two { grid-template-columns: minmax(0, 1fr); }
   }
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
@@ -381,161 +362,11 @@
     <p class="lede" style="max-width:64ch">Everything comes off an open grill in the middle of the room. The cooking is Mediterranean in spirit and mostly British in its ingredients &mdash; Cornish fish, Hereford beef, Lake District lamb &mdash; and the plates are built to be shared. Kostas Papathanasiou, who came from Frantz&eacute;n in Stockholm, runs it.</p>
 
     <div class="aside">
-      <p class="k">A note on the menu below</p>
-      <p>Lita changes its menu with the seasons, so none of this will survive until April 2027. What follows is the list as it stands in November 2026 &mdash; a fair picture of how they cook, and a starting point for us rather than a promise. We will settle the actual dishes, wines and cocktails with them closer to the day.</p>
-    </div>
-  </div>
-</section>
-
-<section class="band">
-  <div class="inner">
-    <h2>A possible menu</h2>
-    <p class="lede" style="max-width:62ch">A selection from the current list &mdash; the dishes that would suit a long table best.</p>
-
-    <div class="two" style="margin-top:clamp(28px,4vw,44px)">
-      <div>
-        <div class="course">
-          <p class="h">To begin</p>
-          <ul class="dishes">
-            <li><span class="n">Wildfarmed sourdough, cultured butter</span><span class="p">9</span></li>
-            <li><span class="n">Devon smoked eel rosti</span><span class="p">9</span></li>
-            <li><span class="n">Grilled St Austell mussels &amp; tomato rosti</span><span class="p">9</span></li>
-            <li><span class="n">Dressed Cornish lobster &amp; tomato rosti</span><span class="p">15</span></li>
-            <li><span class="n">Smoked Basque sardine, grilled focaccia</span><span class="p">12</span></li>
-          </ul>
-        </div>
-
-        <div class="course">
-          <p class="h">Plates for the table</p>
-          <ul class="dishes">
-            <li><span class="n">Heritage beetroot salad, stracciatella, pistachio</span><span class="p">22</span></li>
-            <li><span class="n">Delica squash salad, figs, Marcona almonds, goat&rsquo;s curd</span><span class="p">26</span></li>
-            <li><span class="n">Chopped Hereford beef, cured egg yolk, Gordal olives</span><span class="p">30</span></li>
-            <li><span class="n">Cornish crab salad, basil, tomato dressing</span><span class="p">35</span></li>
-          </ul>
-        </div>
-
-        <div class="course">
-          <p class="h">Pasta</p>
-          <ul class="dishes">
-            <li><span class="n">Linguine, trombetta courgette, pine nuts, pecorino</span><span class="p">25</span></li>
-            <li><span class="n">Strozzapreti, Aylesbury duck rag&ugrave;, Parmesan</span><span class="p">27</span></li>
-            <li><span class="n">Preserved P&eacute;rigord truffle linguine, aged Parmesan</span><span class="p">36</span></li>
-          </ul>
-        </div>
-      </div>
-
-      <div>
-        <div class="course">
-          <p class="h">From the grill</p>
-          <ul class="dishes">
-            <li><span class="n">Hereford bavette, green peppercorn</span><span class="p">37</span></li>
-            <li><span class="n">Grilled monkfish, clam beurre blanc, fennel salad</span><span class="p">66</span></li>
-            <li><span class="n">Ib&eacute;rico pork chop and belly, braised endive, pear</span><span class="p">95</span></li>
-            <li><span class="n">Whole Cornish turbot<em>1.2kg / 1.4kg &mdash; to share</em></span><span class="p">160&ndash;175</span></li>
-            <li><span class="n">Lake District c&ocirc;te de boeuf, 1kg<em>To share</em></span><span class="p">157</span></li>
-          </ul>
-        </div>
-
-        <div class="course">
-          <p class="h">To finish</p>
-          <ul class="dishes">
-            <li><span class="n">Chocolate tart, coffee crumble, hazelnuts, blackcurrant sorbet</span><span class="p">19</span></li>
-            <li><span class="n">Yoghurt mousse, oat crumble, pineapple, Epping honey</span><span class="p">19</span></li>
-            <li><span class="n">Riesling poached peach, almond crumble, brown butter</span><span class="p">19</span></li>
-            <li><span class="n">Raspberries, olive oil biscuit, vanilla cream</span><span class="p">19</span></li>
-          </ul>
-        </div>
-
-        <div class="course">
-          <p class="h">If we are feeling grand</p>
-          <ul class="dishes">
-            <li><span class="n">Kaluga caviar, avocado, focaccia toast</span><span class="p">34</span></li>
-            <li><span class="n">Native Scottish lobster baked rice, cuttlefish, aioli</span><span class="p">95</span></li>
-            <li><span class="n">Dry-aged Devon duck, Medjool dates, foie gras</span><span class="p">130</span></li>
-          </ul>
-        </div>
-      </div>
+      <p class="k">Menu, wine and cocktails</p>
+      <p>Lita changes its menu with the seasons, so there is little sense in printing one now. We will choose the dishes, the wines and the cocktails with them nearer the day, and they will appear here once they are settled.</p>
     </div>
 
-    <a class="linkout" href="https://litamarylebone.com/menu" target="_blank" rel="noopener">The full menu, as it stands today &rarr;</a>
-  </div>
-</section>
-
-<section class="band">
-  <div class="inner">
-    <h2>From the cellar</h2>
-    <p class="lede" style="max-width:62ch">Their list runs to several hundred bottles and leans towards small, family-owned growers. A shortlist, with a Greek accent where it earns its place.</p>
-
-    <div class="two" style="margin-top:clamp(28px,4vw,44px)">
-      <div>
-        <div class="course">
-          <p class="h">To start the evening &middot; by the glass</p>
-          <ul class="dishes">
-            <li><span class="n">Rathfinny Classic Cuv&eacute;e<em>Sussex, England &middot; NV</em></span><span class="p">18</span></li>
-            <li><span class="n">Charles Heidsieck Brut R&eacute;serve<em>Champagne &middot; NV</em></span><span class="p">25</span></li>
-            <li><span class="n">Charles Heidsieck Ros&eacute; R&eacute;serve<em>Champagne &middot; NV</em></span><span class="p">30</span></li>
-          </ul>
-        </div>
-
-        <div class="course">
-          <p class="h">Sparkling &middot; by the bottle</p>
-          <ul class="dishes">
-            <li><span class="n">Casa Coste Piane Prosecco<em>Veneto, Italy</em></span><span class="p">65</span></li>
-            <li><span class="n">Rathfinny Classic Cuv&eacute;e<em>Sussex, England</em></span><span class="p">108</span></li>
-            <li><span class="n">Chartogne-Taillet Sainte Anne<em>Champagne</em></span><span class="p">145</span></li>
-            <li><span class="n">Delamotte Blanc de Blancs<em>Champagne</em></span><span class="p">160</span></li>
-            <li><span class="n">Billecart-Salmon Ros&eacute; R&eacute;serve<em>Champagne</em></span><span class="p">170</span></li>
-          </ul>
-        </div>
-
-        <div class="course">
-          <p class="h">White</p>
-          <ul class="dishes">
-            <li><span class="n">Assyrtiko, Gavalas Winery<em>Santorini, Greece &middot; 2024 &middot; by the glass</em></span><span class="p">26</span></li>
-            <li><span class="n">Albari&ntilde;o Sobre L&iacute;as, Casal Caei&ntilde;o<em>Galicia, Spain &middot; 2024</em></span><span class="p">90</span></li>
-            <li><span class="n">Etna Bianco, Barone di Villagrande<em>Sicily, Italy &middot; 2024</em></span><span class="p">90</span></li>
-            <li><span class="n">Vermentino, Valerie Courr&egrave;ges<em>Provence, France &middot; 2025</em></span><span class="p">75</span></li>
-            <li><span class="n">Assyrtiko &lsquo;Familia&rsquo;, Hatzidakis<em>Santorini, Greece &middot; 2025</em></span><span class="p">145</span></li>
-          </ul>
-        </div>
-      </div>
-
-      <div>
-        <div class="course">
-          <p class="h">Ros&eacute;</p>
-          <ul class="dishes">
-            <li><span class="n">Tavel &lsquo;Post&eacute;rit&eacute;&rsquo; Soixante-Dix<em>Rh&ocirc;ne, France &middot; 2023</em></span><span class="p">65</span></li>
-            <li><span class="n">Rathfinny Ros&eacute;<em>Sussex, England</em></span><span class="p">96</span></li>
-          </ul>
-        </div>
-
-        <div class="course">
-          <p class="h">Red</p>
-          <ul class="dishes">
-            <li><span class="n">Xinomavro &lsquo;Naoussa&rsquo;, Dalamara<em>Macedonia, Greece &middot; 2023</em></span><span class="p">96</span></li>
-            <li><span class="n">Nero d&rsquo;Avola &lsquo;Terre Calcaree&rsquo;, Marabino<em>Sicily, Italy &middot; 2023</em></span><span class="p">75</span></li>
-            <li><span class="n">C&ocirc;tes du Rh&ocirc;ne, Clos du Caillou<em>Rh&ocirc;ne, France &middot; 2024</em></span><span class="p">75</span></li>
-            <li><span class="n">Frappato, Arianna Occhipinti<em>Sicily, Italy &middot; 2024</em></span><span class="p">105</span></li>
-            <li><span class="n">Rosso di Montalcino, Casisano<em>Tuscany, Italy &middot; 2023</em></span><span class="p">85</span></li>
-            <li><span class="n">Ch&acirc;teau Musar<em>Bekaa Valley, Lebanon &middot; 2019</em></span><span class="p">175</span></li>
-          </ul>
-        </div>
-
-        <div class="course">
-          <p class="h">Sweet, at the end</p>
-          <ul class="dishes">
-            <li><span class="n">Malvasia delle Lipari, Tenuta Castellaro<em>Sicily, Italy &middot; 2023 &middot; 375ml</em></span><span class="p">90</span></li>
-            <li><span class="n">Vintage Port &lsquo;Quinta do Panascal&rsquo;, Fonseca<em>Porto, Portugal &middot; 2001 &middot; 375ml</em></span><span class="p">60</span></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-    <div class="aside">
-      <p class="k">Cocktails</p>
-      <p>Lita keeps a short bar list alongside the wine &mdash; a handful of house drinks rather than a long menu. It is not published in a form we can reproduce here, so we will go through it with them when we sit down to choose.</p>
-    </div>
+    <a class="linkout" href="https://litamarylebone.com/" target="_blank" rel="noopener">Lita&rsquo;s own pages &rarr;</a>
   </div>
 </section>
 
