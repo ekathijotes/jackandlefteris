@@ -36,6 +36,8 @@
     --ink: #1A1A17;
     --stone: #5F5E57;
     --line: #DAD8D1;
+    /* section rules sit a step darker than the hairlines inside them */
+    --line-band: #CCCAC3;
     --accent: #5B6150;
     color-scheme: light;
 
@@ -76,7 +78,7 @@
     background-size: 160px 160px;
   }
 
-  .band { border-bottom: 2px solid var(--line); }
+  .band { border-bottom: 2px solid var(--line-band); }
   .band:last-of-type { border-bottom: 0; }
   .inner {
     padding-left: var(--gutter);
