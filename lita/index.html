@@ -156,6 +156,7 @@
     font-size: clamp(0.7rem, 0.22vw + 0.62rem, 0.84rem);
     letter-spacing: 0.2em; text-transform: uppercase; color: var(--stone); margin: 12px 0 0;
   }
+  .map-note strong { font-weight: 500; color: var(--ink); }
   .leaflet-container { font-family: var(--body); background: #E4E3DE; }
   .leaflet-tile-pane { filter: grayscale(1) sepia(0.18) brightness(1.06) contrast(0.86) opacity(0.92); }
   .leaflet-popup-content-wrapper { background: var(--paper); color: var(--ink); border-radius: 0; box-shadow: 0 10px 30px rgba(0,0,0,.12); }
@@ -352,7 +353,7 @@
     </div>
 
     <div id="map"></div>
-    <p class="map-note">Green marker: the town hall. Dark marker: Lita.</p>
+    <p class="map-note"><strong>Green marker</strong>: the town hall. <strong>Dark marker</strong>: Lita. The dotted line is the walk.</p>
   </div>
 </section>
 
@@ -469,7 +470,24 @@
       '<em><a href="https://www.google.com/maps/search/?api=1&amp;query=Lita%2C%207-9%20Paddington%20Street%2C%20London%20W1U%205QH" target="_blank" rel="noopener">Directions &rarr;</a></em>'
     );
 
-    map.fitBounds(L.latLngBounds([[HALL.lat, HALL.lng], [LITA.lat, LITA.lng]]), { padding: [60, 60] });
+    /* the walk: east along Marylebone Road, then down Marylebone High Street */
+    var WALK = [
+      [HALL.lat, HALL.lng],
+      [51.52196, -0.15400],
+      [51.52182, -0.15270],
+      [51.52110, -0.15250],
+      [LITA.lat, LITA.lng]
+    ];
+    L.polyline(WALK, {
+      color: '#1E5540',
+      weight: 2.5,
+      opacity: 0.85,
+      dashArray: '1 8',
+      lineCap: 'round',
+      lineJoin: 'round'
+    }).addTo(map);
+
+    map.fitBounds(L.latLngBounds(WALK), { padding: [60, 60] });
   })();
 </script>
 </body>
