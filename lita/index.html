@@ -346,7 +346,7 @@
       </div>
       <div class="fact">
         <p class="k">From the ceremony</p>
-        <p class="v">About eight minutes on foot<small>East along Marylebone Road, then Baker Street</small></p>
+        <p class="v">About eight minutes on foot<small>East, and a little south</small></p>
       </div>
       <div class="fact">
         <p class="k">When</p>
@@ -355,7 +355,7 @@
     </div>
 
     <div id="map"></div>
-    <p class="map-note"><strong>Green marker</strong>: the town hall. <strong>Dark marker</strong>: Lita. The dotted line is the walk.</p>
+    <p class="map-note"><strong>Green marker</strong>: the town hall. <strong>Dark marker</strong>: Lita.</p>
   </div>
 </section>
 
@@ -496,27 +496,6 @@
     var HALL = { lat: 51.52146, lng: -0.16010 };   // Old Marylebone Town Hall, 97-113 Marylebone Road
     var LITA = { lat: 51.52081, lng: -0.15276 };   // Lita, 7-9 Paddington Street
 
-    /* The walk, traced along the actual streets: east on Marylebone Road,
-       south down Baker Street, then east along Paddington Street. Most of
-       these are real OSM nodes for those three roads. */
-    var WALK = [
-      [51.52146, -0.16010],
-      [51.52163, -0.16004],
-      [51.52172, -0.15948],
-      [51.52192, -0.15841],
-      [51.52213, -0.15782],
-      [51.52218, -0.15745],
-      [51.52150, -0.15726],
-      [51.52080, -0.15708],
-      [51.52045, -0.15700],
-      [51.52040, -0.15608],
-      [51.52051, -0.15550],
-      [51.52062, -0.15484],
-      [51.52067, -0.15382],
-      [51.52069, -0.15315],
-      [51.52081, -0.15276]
-    ];
-
     var map = L.map('map', { scrollWheelZoom: false, zoomControl: true })
                 .setView([51.52114, -0.15643], 16);
 
@@ -538,20 +517,11 @@
       '<em><a href="https://www.google.com/maps/search/?api=1&amp;query=Lita%2C%207-9%20Paddington%20Street%2C%20London%20W1U%205QH" target="_blank" rel="noopener">Directions &rarr;</a></em>'
     );
 
-    L.polyline(WALK, {
-      color: '#1E5540',
-      weight: 2.5,
-      opacity: 0.85,
-      dashArray: '1 8',
-      lineCap: 'round',
-      lineJoin: 'round'
-    }).addTo(map);
-
     /* The map is built behind the passphrase gate, where it cannot measure
        itself properly, so framing it once at load leaves it at a nonsense
        zoom. Re-measure and re-frame whenever the size changes — unlocking
        the page fires a resize, which is what brings this back to its senses. */
-    var BOUNDS = L.latLngBounds(WALK);
+    var BOUNDS = L.latLngBounds([[HALL.lat, HALL.lng], [LITA.lat, LITA.lng]]);
     function frame() {
       map.invalidateSize(false);
       map.fitBounds(BOUNDS, { padding: [50, 50] });
